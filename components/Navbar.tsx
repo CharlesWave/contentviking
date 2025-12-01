@@ -39,9 +39,11 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <div className="flex-shrink-0 flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-10 h-10 bg-brand-black rounded-sm flex items-center justify-center shadow-neo-sm transition-transform group-hover:-translate-y-0.5">
-               <span className="text-white font-bold font-display text-xl">CV</span>
-            </div>
+            <img 
+              src="/logo-cropped.png" 
+              alt="ContentViking Logo" 
+              className="h-12 w-auto transition-transform group-hover:-translate-y-0.5"
+            />
             <span className="text-brand-black font-display font-bold text-2xl tracking-tight">ContentViking</span>
           </div>
           

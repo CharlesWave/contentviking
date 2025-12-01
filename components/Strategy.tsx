@@ -39,12 +39,12 @@ const Strategy: React.FC = () => {
         <div className="mb-16 text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
                <Cpu className="w-8 h-8 md:w-10 md:h-10 text-brand-yellow" />
-               <h2 className="text-4xl md:text-5xl font-display font-bold text-brand-yellow whitespace-nowrap overflow-hidden text-ellipsis px-2">
-                 AI-Enhanced Content Engineering
+               <h2 className="text-4xl md:text-5xl font-display text-brand-yellow whitespace-nowrap overflow-hidden text-ellipsis px-2">
+                 Our Approach
                </h2>
             </div>
-            <p className="text-xl md:text-2xl text-brand-black font-bold tracking-tight">
-              Insights derived from proprietary data, amplified with AI engineering, and perfected with human craft.
+            <p className="text-xl md:text-xl text-brand-black font-bold tracking-tight">
+              Scale content writing with AI. Control quality with expert aduiting.
             </p>
         </div>
 

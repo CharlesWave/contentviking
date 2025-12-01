@@ -29,15 +29,15 @@ const Hero: React.FC = () => {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-display font-bold text-brand-black leading-[1.1] tracking-tight">
-              Amplify Insights. <br />
-              <span className="relative inline-block text-brand-black">
+              Amplify Insights <br />
+              <span className="relative inline-block text-brand-black mt-4">
                 Build Audience.
                 <div className="absolute bottom-2 left-0 w-full h-3 bg-brand-yellow/40 -z-10 transform -rotate-1"></div>
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-brand-darkgray leading-relaxed max-w-xl">
-            We distill insights across meetings and documents to build thought leadership for founders.
+              We distill insights from meetings and documents to help founders become thought leaders.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-2">

@@ -1,6 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
+// Vite exposes env vars via import.meta.env with VITE_ prefix
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export interface GeneratedPost {
@@ -16,7 +17,7 @@ export const generateContentStrategy = async (topic: string): Promise<GeneratedP
       {
         angle: "Revenue Operations vs. Sales",
         stance: "RevOps should own the quota model, not the VP of Sales.",
-        content: "Stop letting your VP of Sales set the quota. It’s a conflict of interest.\n\nRevenue Operations isn't just a support function; it's the impartial judge of your revenue engine. When Sales sets the target, they optimize for attainability. When RevOps sets it, they optimize for predictability.\n\nI've seen SaaS companies stall because..."
+        content: "Stop letting your VP of Sales set the quota. It's a conflict of interest.\n\nRevenue Operations isn't just a support function; it's the impartial judge of your revenue engine. When Sales sets the target, they optimize for attainability. When RevOps sets it, they optimize for predictability.\n\nI've seen SaaS companies stall because..."
       },
       {
         angle: "The 'Growth at All Costs' Fallacy",
@@ -32,20 +33,26 @@ export const generateContentStrategy = async (topic: string): Promise<GeneratedP
   }
 
   try {
-    const prompt = `
-      You are a world-class B2B content strategist. 
-      For the topic "${topic}", identify 3 distinct, controversial, or counter-intuitive angles relevant to B2B founders.
+    // Stage 1: Generate 3 controversial topics with 2 stances each
+    const stage1Prompt = `
+      You are a world-class B2B content strategist.
+      For the topic "${topic}", generate exactly 3 controversial, counter-intuitive, or contrarian angles that would be relevant to B2B founders and executives.
       
-      For each angle:
-      1. Define a clear "Stance" (a strong opinion).
-      2. Write the opening of a viral LinkedIn post (Headline + First 2 paragraphs). The tone should be authoritative and direct.
+      For each of the 3 angles, provide exactly 2 distinct stances (strong opinions) that could be taken.
       
-      Return exactly 3 items.
+      Return a JSON array with this structure:
+      [
+        {
+          "topic": "Topic name",
+          "stances": ["Stance 1", "Stance 2"]
+        },
+        ...
+      ]
     `;
 
-    const response = await ai.models.generateContent({
+    const stage1Response = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
-      contents: prompt,
+      contents: stage1Prompt,
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
@@ -53,9 +60,86 @@ export const generateContentStrategy = async (topic: string): Promise<GeneratedP
           items: {
             type: Type.OBJECT,
             properties: {
-              angle: { type: Type.STRING, description: "The general angle or sub-topic" },
-              stance: { type: Type.STRING, description: "The specific opinion taken" },
-              content: { type: Type.STRING, description: "The draft post text" }
+              topic: { type: Type.STRING, description: "A controversial angle or sub-topic" },
+              stances: { 
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: "Exactly 2 distinct stances/opinions for this topic"
+              }
+            },
+            required: ["topic", "stances"]
+          }
+        }
+      }
+    });
+
+    const stage1Text = stage1Response.text;
+    if (!stage1Text) {
+      console.error("Stage 1: No response from API");
+      return [];
+    }
+
+    const topics = JSON.parse(stage1Text);
+    if (!Array.isArray(topics) || topics.length === 0) {
+      console.error("Stage 1: Invalid response format");
+      return [];
+    }
+
+    // Stage 2: Write LinkedIn posts for all 3 topics
+    interface TopicWithStances {
+      topic: string;
+      stances: string[];
+    }
+
+    const stage2Prompt = `
+      You are a world-class B2B content strategist writing viral LinkedIn thought leadership posts.
+      
+      For each of the following 3 topics, write a compelling LinkedIn post using the specified stance.
+      The posts should be authoritative, direct, and thought-provoking. Each post should be 3-4 paragraphs.
+      
+      Topics and stances:
+      ${topics.map((t: TopicWithStances, idx: number) => 
+        `${idx + 1}. Topic: "${t.topic}"\n   Stance: "${t.stances[0]}"`
+      ).join('\n\n')}
+      
+      ## Style Requirements
+      
+      **NEVER use m dash**
+      
+      **Avoid bulky paragraph with more than 3 sentences**
+      
+      **Never use dramatic expressions like "My stomach dropped."** Use calm, plain and neutral expression.
+      
+      **ALWAYS use strong hook**
+      
+      **Always have a strong PoV**
+      
+      **NEVER use expression pattern like it's not X, it's Y**
+      
+      Return a JSON array with this structure:
+      [
+        {
+          "angle": "Topic name",
+          "stance": "The stance used",
+          "content": "Full LinkedIn post content (3-4 paragraphs)"
+        },
+        ...
+      ]
+    `;
+
+    const stage2Response = await ai.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: stage2Prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              angle: { type: Type.STRING, description: "The topic/angle name" },
+              stance: { type: Type.STRING, description: "The stance/opinion taken" },
+              content: { type: Type.STRING, description: "The full LinkedIn post content (3-4 paragraphs)" }
             },
             required: ["angle", "stance", "content"]
           }
@@ -63,11 +147,13 @@ export const generateContentStrategy = async (topic: string): Promise<GeneratedP
       }
     });
 
-    const text = response.text;
-    if (!text) return [];
+    const stage2Text = stage2Response.text;
+    if (!stage2Text) {
+      console.error("Stage 2: No response from API");
+      return [];
+    }
     
-    // Parse the JSON array
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(stage2Text);
     if (Array.isArray(parsed)) {
       return parsed;
     }

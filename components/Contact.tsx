@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Calendar, Loader2, CheckCircle, ArrowRight } from 'lucide-react';
+import { Calendar, Loader2, CheckCircle, ArrowRight, XCircle } from 'lucide-react';
+import { sendEmail } from '../services/emailService';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,8 @@ const Contact: React.FC = () => {
     challenge: ''
   });
   
-  const [status, setStatus] = useState<'IDLE' | 'SENDING' | 'SUCCESS'>('IDLE');
+  const [status, setStatus] = useState<'IDLE' | 'SENDING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -21,18 +23,17 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('SENDING');
+    setErrorMessage('');
 
-    // Simulate network request to backend
-    // In production, this would be an API call to a server or service like EmailJS/Formspree
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Log data to console to simulate sending to the specified email
-    console.log("Sending email to: founders@contentviking.ca");
-    console.log("Form Data:", formData);
+    const success = await sendEmail(formData);
 
-    setStatus('SUCCESS');
-    // Optional: Reset form data if needed, but keeping it cleared is usually better for UX
-    setFormData({ name: '', company: '', email: '', challenge: '' });
+    if (success) {
+      setStatus('SUCCESS');
+      setFormData({ name: '', company: '', email: '', challenge: '' });
+    } else {
+      setStatus('ERROR');
+      setErrorMessage('Failed to send your request. Please try again or contact us directly at founders@contentviking.ca');
+    }
   };
 
   return (
@@ -41,16 +42,32 @@ const Contact: React.FC = () => {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Calendar className="w-8 h-8 md:w-10 md:h-10 text-brand-yellow" />
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-brand-yellow">Book a Demo</h2>
+            <h2 className="text-4xl md:text-5xl font-display text-brand-yellow">Book a Demo</h2>
           </div>
-          <p className="text-xl md:text-2xl text-brand-black font-bold tracking-tight">
+          <p className="text-xl md:text-xl text-brand-black font-bold tracking-tight">
             We only take on 5 new clients per month. Book a discovery audit below.
           </p>
         </div>
 
         <div className="bg-white p-8 md:p-12 rounded-xl border border-gray-200 shadow-soft min-h-[500px] flex items-center justify-center">
           
-          {status === 'SUCCESS' ? (
+          {status === 'ERROR' ? (
+            <div className="text-center max-w-md animate-in fade-in zoom-in duration-500">
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <XCircle className="w-10 h-10 text-red-600" />
+              </div>
+              <h3 className="text-3xl font-display font-bold text-brand-black mb-4">Error Sending Request</h3>
+              <p className="text-brand-darkgray text-lg mb-8 leading-relaxed">
+                {errorMessage}
+              </p>
+              <button 
+                onClick={() => setStatus('IDLE')}
+                className="inline-flex items-center text-brand-black font-bold border-b-2 border-brand-yellow hover:border-brand-black transition-colors"
+              >
+                Try Again <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+          ) : status === 'SUCCESS' ? (
             <div className="text-center max-w-md animate-in fade-in zoom-in duration-500">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-green-600" />

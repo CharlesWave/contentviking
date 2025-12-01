@@ -6,9 +6,11 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-             <div className="w-8 h-8 bg-brand-black rounded-sm flex items-center justify-center">
-               <span className="text-white font-bold font-display text-lg">CV</span>
-             </div>
+             <img 
+               src="/logo-cropped.png" 
+               alt="ContentViking Logo" 
+               className="h-10 w-auto"
+             />
              <span className="text-xl font-display font-bold tracking-tight">ContentViking</span>
           </div>
           <p className="text-gray-500 text-sm">© 2024 ContentViking. All rights reserved.</p>

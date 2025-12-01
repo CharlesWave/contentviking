@@ -39,9 +39,9 @@ const AIDemo: React.FC = () => {
         <div className="text-center mb-10 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Terminal className="w-8 h-8 md:w-10 md:h-10 text-brand-yellow" />
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-brand-yellow">Test The System</h2>
+            <h2 className="text-4xl md:text-5xl font-display text-brand-yellow">Test The System</h2>
           </div>
-          <p className="text-xl md:text-2xl text-brand-black font-bold tracking-tight">
+          <p className="text-xl md:text-xl text-brand-black font-bold tracking-tight">
             Test our baseline engine. Results amplify 2x when engineered with your proprietary data.
           </p>
         </div>

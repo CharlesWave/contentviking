@@ -9,9 +9,9 @@ const Founders: React.FC = () => {
         <div className="mb-16 text-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Users className="w-8 h-8 md:w-10 md:h-10 text-brand-yellow" />
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-brand-yellow">The Architects</h2>
+            <h2 className="text-4xl md:text-5xl font-display text-brand-yellow">The Architects</h2>
           </div>
-          <p className="text-xl md:text-2xl text-brand-black font-bold tracking-tight">
+          <p className="text-xl md:text-xl text-brand-black font-bold tracking-tight">
             Deep Tech Expertise. Marketing Psychology.
           </p>
         </div>
@@ -23,14 +23,14 @@ const Founders: React.FC = () => {
                 <img 
                   src={founder.imageUrl} 
                   alt={founder.name} 
-                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                  className="w-full h-full object-cover"
                 />
               </div>
               
               <div className="flex-1">
                 <div className="flex justify-between items-start mb-1">
                   <h3 className="text-xl font-bold text-brand-black font-display">{founder.name}</h3>
-                  <a href={founder.linkedinUrl || "#"} className="text-gray-400 hover:text-[#0077b5] transition-colors">
+                  <a href={founder.linkedinUrl || "#"} className="text-[#0077b5]">
                     <Linkedin className="w-5 h-5" />
                   </a>
                 </div>
